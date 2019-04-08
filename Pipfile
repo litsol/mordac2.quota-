@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"zc-buildout" = "*"
+"setuptools" = "*"
+"ipdb" = "*"
+"ipython" = "*"
+"pyflakes" = "*"
+"pylint" = "*"
+"mr.bob" = "*"
+"nose" = "*"
+"rednose" = "*"
+"expecter" = "*"
+"bobtemplates.plone" = "*"
+"beautifulsoup4" = "*"
+"buildout-bootstrap" = { git = 'git://github.com/collective/buildout.bootstrap.git', ref = '1.4.8', editable = true }
+
+[dev-packages]
+
+[requires]
+python_version = "2.7"
