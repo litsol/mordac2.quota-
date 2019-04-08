@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from plone.testing import layered
-from mordac2.quota.testing import MORDAC2_QUOTA_ACCEPTANCE_TESTING  # noqa: E501
 from plone.app.testing import ROBOT_TEST_LEVEL
+from mordac2.quota.testing import MORDAC2_QUOTA_ACCEPTANCE_TESTING  # noqa: E501
 
 import os
 import unittest
