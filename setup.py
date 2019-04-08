@@ -15,7 +15,7 @@ long_description = '\n\n'.join([
 setup(
     name='mordac2.quota',
     version='1.0a1',
-    description="Mordac Quota View",
+    description="Mordac2 Quota View",
     long_description=long_description,
     # Get more from https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[

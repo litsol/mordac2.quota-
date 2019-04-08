@@ -18,4 +18,31 @@
       directory="static"
       />
 
+  <!-- Mordac2 -->
+  <browser:page
+      name="demoview"
+      for="*"
+      class=".views.DemoView"
+      template="templates/demoview.pt"
+      layer="mordac2.quota.interfaces.IMordac2QuotaLayer"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="demoview"
+      for="*"
+      class=".views.DemoView"
+      template="templates/demoview.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="quotaview"
+      for="*"
+      layer="mordac2.quota.interfaces.IMordac2QuotaLayer"
+      class=".views.QuotaView"
+      template="templates/quotaview.pt"
+      permission="zope2.ViewManagementScreens"
+      />
+
 </configure>

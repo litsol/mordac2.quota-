@@ -1,5 +1,9 @@
 2019-04-08  Michael Guravage  <guravage@arda.itf.cwi.nl>
 
+	* test_mordac.py
+	(Mordac2QuotaViewIntegrationTest.test_quota_two_2k_document):
+	Adding content to document changed from edit() to text().
+
 	* test_setup.py: More Flake8 nonsense.
 
 	* test_robot.py: More Flake8 nonsense.
@@ -8,3 +12,12 @@
 
 	* test_robot.py: Corrected import order to pacify isort.
 
+2017-02-17  Michael Guravage  <guravage@weddell.itf.cwi.nl>
+
+	* test_mordac.py (MordacQuotaViewIntegrationTest.test_quota_objects): Add test for object state.
+	(MordacQuotaViewIntegrationTest.test_quota_objects): Correct flake8 complaints.
+	(MordacQuotaViewIntegrationTest.test_quota_objects): Add test for object local roles.
+
+2015-04-14  Michael Guravage  <guravage@weddell.itf.cwi.nl>
+
+	* test_mordac.py: Initial Commit
