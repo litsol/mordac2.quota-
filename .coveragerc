@@ -1,0 +1,6 @@
+[report]
+include =
+    src/mordac2/*
+omit =
+    */test*
+    */upgrades/*

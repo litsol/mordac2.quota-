@@ -1,0 +1,6 @@
+2019-04-08  Michael Guravage  <guravage@arda.itf.cwi.nl>
+
+	* .gitignore: Added .venv and Pipfile.lock
+
+	* Created Addon with "mrbob -O . bobtemplates.plone:addon."
+
