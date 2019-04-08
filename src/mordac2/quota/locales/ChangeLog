@@ -1,0 +1,4 @@
+2019-04-08  Michael Guravage  <guravage@arda.itf.cwi.nl>
+
+	* update.py: Corrected import order to pacify isort.
+

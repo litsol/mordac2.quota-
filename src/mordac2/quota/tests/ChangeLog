@@ -1,0 +1,6 @@
+2019-04-08  Michael Guravage  <guravage@arda.itf.cwi.nl>
+
+	* test_setup.py: Corrected import order to pacify isort.
+
+	* test_robot.py: Corrected import order to pacify isort.
+

@@ -1,5 +1,8 @@
 2019-04-08  Michael Guravage  <guravage@arda.itf.cwi.nl>
 
+	* base.cfg (eggs-directory): Add eggs-directory and download-cache
+	directories to localize all eggs.
+
 	* .gitignore: Added .venv and Pipfile.lock
 
 	* Created Addon with "mrbob -O . bobtemplates.plone:addon."

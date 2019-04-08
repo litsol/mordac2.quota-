@@ -1,0 +1,6 @@
+2019-04-08  Michael Guravage  <guravage@arda.itf.cwi.nl>
+
+	* testing.py: Corrected import order to pacify isort.
+
+	* setuphandlers.py: Corrected import order to pacify isort.
+
