@@ -1,10 +1,15 @@
-from Products.Five.browser import BrowserView
+# -*- coding: utf-8 -*-
+
+
 from plone import api
 from zope.interface import implementer
+from Products.Five.browser import BrowserView
 # from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
 import logging
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -28,7 +33,7 @@ class DemoView(BrowserView):
                     'qtt': len(brains),
                 })
             else:
-                logger.info("No elements of type {0}".format(ct))
+                logger.info('No elements of type {0}'.format(ct))
 
         return results
 
@@ -45,7 +50,7 @@ class QuotaView(BrowserView):
     def get_objects(self):
         results = []
         portal_catalog = api.portal.get_tool('portal_catalog')
-        current_path = "/".join(self.context.getPhysicalPath())
+        current_path = '/'.join(self.context.getPhysicalPath())
         brains = portal_catalog(path=current_path)
 
         for brain in brains:
@@ -55,7 +60,7 @@ class QuotaView(BrowserView):
                 'size': brain.getObjSize,
                 'type': brain.portal_type,
                 'state': brain.review_state,
-                })
+            })
         return results
 
     def human_format(self, num):
@@ -64,23 +69,20 @@ class QuotaView(BrowserView):
             magnitude += 1
             num /= 1024.0
         # add more suffixes if you need them
-        return '%.0f %sB' % (num, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])
+        return '%.0f %sB' % (num, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])  # noqa: S001
 
     def getSize(self, brain):
-        return float(brain.getObjSize.split()[0])*(
-            brain.getObjSize.endswith('KB') and 1024
-            or brain.getObjSize.endswith('MB') and 1024*1024
-            or 1)
+        return float(brain.getObjSize.split()[0]) * (brain.getObjSize.endswith('KB') and 1024 or brain.getObjSize.endswith('MB') and 1024 * 1024 or 1)  # noqa: E501
 
     def total(self):
         portal_catalog = api.portal.get_tool('portal_catalog')
-        current_path = "/".join(self.context.getPhysicalPath())
+        current_path = '/'.join(self.context.getPhysicalPath())
         brains = portal_catalog(path=current_path)
         return self.human_format(
             sum([self.getSize(brain) for brain in brains]))
 
     def isset(self):
-        return hasattr(self, 'verbose')
+        return hasattr(self, 'verbose')  # noqa: P002
 
     # def __call__(self):
     #     import pdb; pdb.set_trace()

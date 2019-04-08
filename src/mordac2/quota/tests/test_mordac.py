@@ -1,48 +1,53 @@
+# -*- coding: utf-8 -*-
+
+from plone import api
+from traceback import print_exc
+# from zope.component import getMultiAdapter
+from AccessControl import Unauthorized
+# from AccessControl import getSecurityManager
+from plone.app.testing import logout
+from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
+from mordac2.quota.testing import MORDAC2_QUOTA_INTEGRATION_TESTING
+from plone.app.textfield.value import RichTextValue
+
 import os
 import random
 import string
 import StringIO
 import unittest
-import Missing
-from plone import api
-from traceback import print_exc
-from plone.app.testing import logout
-from plone.app.testing import setRoles
-from plone.app.testing import TEST_USER_ID
-from plone.app.textfield.value import RichTextValue
-from AccessControl import getSecurityManager
-from mordac2.quota.testing import MORDAC2_QUOTA_INTEGRATION_TESTING
-# from zope.component import getMultiAdapter
-from AccessControl import Unauthorized
 
 
 def random_generator(size=6, chars=string.ascii_uppercase + string.digits):
-    '''Return a random selection of characters and digits. '''
+    """Return a random selection of characters and digits. """
     return ''.join(random.choice(chars) for x in range(size))
 
 
+RTEXT = random_generator(size=2048)
+
+
 def print_exception():
-    ''' Pretty print the exception. '''
+    """ Pretty print the exception. """
     f = StringIO.StringIO()
     print_exc(file=f)
     error_mess = f.getvalue().splitlines()
-    print "Exception Occurred :\n"
+    print 'Exception Occurred :\n'  # noqa: T001
     for line in error_mess:
-        print line
+        print line  # noqa: T001
     f.close()
 
 
 class QuotaViewTestAPI():
-    ''' Common Test functionality. '''
+    """ Common Test functionality. """
     def get_quota_view(self):
-        ''' Retrieve the quota view. '''
+        """ Retrieve the quota view. """
         return api.content.get_view(
             name='quotaview',
             context=self.portal,
-            request=self.request,)
+            request=self.request)
 
     def create_document(self, docId='doc'):
-        ''' Create an empty document. '''
+        """ Create an empty document. """
         return api.content.create(
             container=self.portal,
             type='Document',
@@ -51,84 +56,83 @@ class QuotaViewTestAPI():
 
     def print_to_devnull(self, s):
         bitbucket = open(os.devnull, 'w')
-        print >>bitbucket,  s
+        print >>bitbucket, s  # noqa: T001
         bitbucket.close()
 
 
 class Mordac2QuotaViewAcquisitionTraversalIntegrationTest(unittest.TestCase,
-                                                         QuotaViewTestAPI):
-    ''' Test whether the view exists, whether we can acquire it
-        and whether we can traverse it by various means. '''
+                                                          QuotaViewTestAPI):
+    """ Test whether the view exists, whether we can acquire it
+        and whether we can traverse it by various means. """
     layer = MORDAC2_QUOTA_INTEGRATION_TESTING
 
     def setUp(self):
-        ''' Get the portal and request objects.'''
+        """ Get the portal and request objects."""
         self.portal = self.layer['portal']
         self.request = self.layer['request']
         setRoles(self.portal, TEST_USER_ID, ['Manager'])
 
     def test_quota_view_exists(self):
-        ''' Ascertain whether the view exists. '''
+        """ Ascertain whether the view exists. """
         view = self.get_quota_view()
         self.assertIsNotNone(view)
 
     def test_quota_browserlayer_interface_is_registered(self):
-        ''' Test that IMordac2QuotaLayer is registered. '''
+        """ Test that IMordac2QuotaLayer is registered. """
         from mordac2.quota.interfaces import IMordac2QuotaLayer
         from plone.browserlayer import utils
         self.assertIn(IMordac2QuotaLayer, utils.registered_layers())
 
     def test_view_with_browser_layer(self):
-        ''' Assert the view returns something. '''
+        """ Assert the view returns something. """
         view = self.get_quota_view()
-        #view = view.aq_inner.__of__(self.portal)
         self.assertTrue(view())
 
     def test_view_with_restricted_traverse(self):
-        ''' Assert that restricted traversal returns something. '''
+        """ Assert that restricted traversal returns something. """
         view = self.portal.restrictedTraverse('quotaview')
         self.assertTrue(view())
 
     def test_view_with_unrestricted_traverse(self):
-        ''' Assert that unrestricted traversal returns something. '''
+        """ Assert that unrestricted traversal returns something. """
         view = self.portal.unrestrictedTraverse('quotaview')
         self.assertTrue(view())
 
     def test_view_html_structure(self):
-        ''' Assert correct html structure. '''
+        """ Assert correct html structure. """
         import lxml
         view = self.get_quota_view()
-        #view = view.aq_inner.__of__(self.portal)
         output = lxml.html.fromstring(view())
-        self.assertEqual(1, len(output.xpath("/html/body")))
+        self.assertEqual(1, len(output.xpath('/html/body')))
 
 
 class Mordac2QuotaViewSecurityIntegrationTest(unittest.TestCase,
-                                             QuotaViewTestAPI):
-    ''' Test that only the Manager role can use the view. '''
+                                              QuotaViewTestAPI):
+    """ Test that only the Manager role can use the view. """
     layer = MORDAC2_QUOTA_INTEGRATION_TESTING
 
     def setUp(self):
-        ''' Get the portal and request objects.'''
+        """ Get the portal and request objects."""
         self.portal = self.layer['portal']
         self.request = self.layer['request']
         setRoles(self.portal, TEST_USER_ID, ['Manager'])
 
     def test_quota_member_role(self):
-        ''' Apply the quotaview to an empty site;
-            The view should not be accessable to non Manager roles. '''
+        """ Apply the quotaview to an empty site;
+            The view should not be accessable to non Manager roles. """
         setRoles(self.portal, TEST_USER_ID, ['Member'])
-        user = getSecurityManager().getUser()
+
+        user = api.user.get_current()
         roles = ['Member', 'Authenticated']
-        self.assertEqual(user.getRolesInContext(self.portal), roles)
+        self.assertEqual(user.getRolesInContext(self.portal), roles)  # noqa: P001
         with self.assertRaises(Unauthorized) as cm:
             self.portal.restrictedTraverse('quotaview')
         the_exception = cm.exception
         self.print_to_devnull(the_exception)
 
     def test_quota_anonymous_role(self):
-        ''' Apply the quotaview to an empty site;
-            The view should not be accessable to an anonymous user. '''
+        """ Apply the quotaview to an empty site;
+            The view should not be accessable to an anonymous user. """
         logout()
         with self.assertRaises(Unauthorized) as cm:
             self.portal.restrictedTraverse('quotaview')
@@ -136,74 +140,74 @@ class Mordac2QuotaViewSecurityIntegrationTest(unittest.TestCase,
         self.print_to_devnull(the_exception)
 
     def test_quota_manager_role(self):
-        ''' Apply the quotaview to an empty site;
-            The view should be accessable to the Manager role. '''
+        """ Apply the quotaview to an empty site;
+            The view should be accessable to the Manager role. """
         setRoles(self.portal, TEST_USER_ID, ['Manager'])
-        user = getSecurityManager().getUser()
+
+        user = api.user.get_current()
         roles = ['Manager', 'Authenticated']
-        self.assertEqual(user.getRolesInContext(self.portal), roles)
+        self.assertEqual(user.getRolesInContext(self.portal), roles)  # noqa: P001
         self.portal.restrictedTraverse('quotaview')
 
 
 class Mordac2QuotaViewIntegrationTest(unittest.TestCase,
-                                     QuotaViewTestAPI):
-    ''' Test whether the view actually works. '''
+                                      QuotaViewTestAPI):
+    """ Test whether the view actually works. """
     layer = MORDAC2_QUOTA_INTEGRATION_TESTING
 
     def setUp(self):
-        ''' Get the portal and request objects.'''
+        """ Get the portal and request objects."""
         self.portal = self.layer['portal']
         self.request = self.layer['request']
         setRoles(self.portal, TEST_USER_ID, ['Manager'])
 
     def test_quota_empty_site(self):
-        ''' Apply the quotaview to an empty site;
-            the total returned should be zero bytes. '''
+        """ Apply the quotaview to an empty site;
+            the total returned should be zero bytes. """
         view = self.get_quota_view()
         self.assertEqual('0 B', view.total())
 
     def test_quota_empty_document(self):
-        ''' Create an empty document at the root of an empty site.
-            The total returned should be zero bytes. '''
+        """ Create an empty document at the root of an empty site.
+            The total returned should be zero bytes. """
         view = self.get_quota_view()
         self.create_document()
         self.assertEqual('0 B', view.total())
 
     def test_quota_2k_document(self):
-        ''' Create a document at the root of an empty
+        """ Create a document at the root of an empty
             site and populate it with two kilobytes
-            of content. The view should confirm the size. '''
+            of content. The view should confirm the size. """
         view = self.get_quota_view()
         doc = self.create_document()
         doc.text = RichTextValue(
-            random_generator(size=2048),
+            RTEXT,
             'text/plain',
             'text/html',
         )
         self.assertEqual('2 KB', view.total())
 
     def test_quota_two_2k_document(self):
-        ''' Create two documents at the root of an empty
+        """ Create two documents at the root of an empty
             site and populate them with two kilobytes of
-             content each. The view should confirm the size. '''
+             content each. The view should confirm the size. """
         view = self.get_quota_view()
-        rtext = random_generator(size=2048)
         self.create_document(docId='doc1').text = RichTextValue(
-            random_generator(size=2048),
+            RTEXT,
             'text/plain',
             'text/html',
         )
         self.create_document(docId='doc2').text = RichTextValue(
-            random_generator(size=2048),
+            RTEXT,
             'text/plain',
             'text/html',
         )
         self.assertEqual('4 KB', view.total())
 
     def test_quota_objects(self):
-        ''' Check whether the get_objects() function returns a list of
+        """ Check whether the get_objects() function returns a list of
             dictionaries, and that the first dictionary contains the
-            proper values. '''
+            proper values. """
 
         view = self.get_quota_view()
         self.create_document()
